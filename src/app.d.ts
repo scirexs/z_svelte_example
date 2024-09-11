@@ -1,5 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
+/// <reference types="../lib/type" />
 declare global {
 	namespace App {
 		// interface Error {}
@@ -8,6 +9,7 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 	}
+	// app's global type definitions
 }
 
 export {};

@@ -28,6 +28,12 @@ export default [
 		}
 	},
 	{
+		files: ["src/lib/util.ts"],
+		rules: {
+			"@typescript-eslint/no-explicit-any": "off",
+		},
+	},
+	{
 		ignores: ['build/', '.svelte-kit/', 'dist/']
 	}
 ];
