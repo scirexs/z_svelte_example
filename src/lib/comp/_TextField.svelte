@@ -72,17 +72,17 @@
     status = STATE.DEFAULT;
     ({ bottom, aux } = partDefault);
   }
-  function setValidateStatus(result: boolean, msg?: string, mark?: string | Snippet) {
+  function setValidateStatus(result: boolean, bottom?: string, aux?: string | Snippet) {
     status = result ? STATE.ACTIVE : STATE.INVALID;
-    bottom = (partDefault.bottom !== undefined && msg === undefined) ? partDefault.bottom : msg;
-    aux = (partDefault.aux !== undefined && mark === undefined) ? partDefault.aux : mark;
+    bottom = (partDefault.bottom !== undefined && bottom === undefined) ? partDefault.bottom : bottom;
+    aux = (partDefault.aux !== undefined && aux === undefined) ? partDefault.aux : aux;
   }
 
   /*** Validation ***/
   function testValue(auto: boolean = false): boolean {
     if (validation === undefined || status === STATE.DISABLE) { return true; }
-    const [result, msg, mark] = validation(value, auto);
-    setValidateStatus(result, msg, mark);
+    const [result, bottom, aux] = validation(value, auto);
+    setValidateStatus(result, bottom, aux);
     return result;
   }
 
@@ -102,21 +102,23 @@
 <!---------------------------------------->
 
 <div class={myStyle[PART.WHOLE]} role="group" aria-labelledby={lid}>
-  <div class={myStyle[PART.TOP]}>
-    {#if typeof label === "string"}
-      <label class={myStyle[PART.LABEL]} for={id} id={lid}>{label}</label>
-    {/if}
-    {#if typeof req === "string"}
-      <span class={myStyle[PART.REQ]}>{req}</span>
-    {:else if typeof req === "function"}
-      <span class={myStyle[PART.REQ]}>{@render req()}</span>
-    {/if}
-    {#if typeof aux === "string"}
-      <span class={myStyle[PART.AUX]}>{aux}</span>
-    {:else if typeof aux === "function"}
-      <span class={myStyle[PART.AUX]}>{@render aux()}</span>
-    {/if}
-  </div>
+  {#if myStyle[PART.TOP] || label !== undefined || req !== undefined || aux !== undefined}
+    <div class={myStyle[PART.TOP]}>
+      {#if typeof label === "string"}
+        <label class={myStyle[PART.LABEL]} for={id} id={lid}>{label}</label>
+      {/if}
+      {#if typeof req === "string"}
+        <span class={myStyle[PART.REQ]}>{req}</span>
+      {:else if typeof req === "function"}
+        <span class={myStyle[PART.REQ]}>{@render req()}</span>
+      {/if}
+      {#if typeof aux === "string"}
+        <span class={myStyle[PART.AUX]}>{aux}</span>
+      {:else if typeof aux === "function"}
+        <span class={myStyle[PART.AUX]}>{@render aux()}</span>
+      {/if}
+    </div>
+  {/if}
   <div class={myStyle[PART.MIDDLE]}>
     {#if typeof left === "string"}
       <span class={myStyle[PART.LEFT]}>{left}</span>

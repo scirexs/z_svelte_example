@@ -7,12 +7,18 @@ export default {
         "nsbold": ["NSJP-Centered", "sans-serif"],
       },
       colors: {
-        canvas: "var(--color-canvas)",
-        active: "var(--color-active)",
-        inactive: "var(--color-inactive)",
-        charline: "var(--color-charline)",
-        invalid: "var(--color-invalid)",
+        canvas: "rgb(var(--color-canvas))",
+        txtbdr: "rgb(var(--color-txtbdr))",
+        active: "rgb(var(--color-active))",
+        inactive: "rgb(var(--color-inactive))",
+        invalid: "rgb(var(--color-invalid))",
       },
+      brightness: {
+        var: "var(--color-bright)",
+      },
+      backdropBrightness: {
+        var: "var(--color-bright)",
+      }
     },
   },
   plugins: [],

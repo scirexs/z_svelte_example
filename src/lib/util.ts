@@ -25,6 +25,7 @@ export {
   genUUID,
   getRandomInt,
   trigger,
+  throttle,
   // Async utility
   sleep,
   // Global state
@@ -367,6 +368,22 @@ function getRandomInt(max: number): number {
 }
 function trigger(target: boolean): boolean {
   return !target;
+}
+function throttle<T extends (...args: any[]) => any>(interval: number, fn: T): (...args: Parameters<T>) => void {
+  let timer: number | undefined;
+  let last: number = 0;
+  const elapsed = () => Date.now() - last;
+  const run = (args: Parameters<T>) => {
+    fn.call(null, ...args);
+    last = Date.now();
+  }
+  return (...args: Parameters<T>) => {
+    if (!last) { run(args); return; }
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      if (elapsed() >= interval) { run(args); }
+    }, interval - elapsed());
+  };
 }
 
 /********** Async utility **********/

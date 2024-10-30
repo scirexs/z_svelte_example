@@ -1,7 +1,9 @@
 <script module lang="ts">
   /*** Export ***/
   export type Props = {
-    options: SelectOption,  // bindable
+    min: number,  // bindable
+    max: number,  // bindable
+    step?: number | "any",  // bindable
     label?: string,
     req?: string | Snippet,
     aux?: string | Snippet,  // bindable
@@ -9,19 +11,18 @@
     right?: string | Snippet,
     bottom?: string,  // bindable
     status?: State,  // bindable, [STATE.DEFAULT]
-    value?: string,  // bindable, [""]
-    placeholder?: string,
+    value?: number,  // bindable,
+    options?: number[],  // bindable
     test?: () => boolean,  // bindable
-    validation?: (value: string) => [boolean, string?, (string | Snippet)?],
+    validation?: (value: number) => [boolean, string?, (string | Snippet)?],
     style?: DefineStateStyle | DefineStyle,
     action?: Action,
     events?: EventSet,
-    attributes?: HTMLAttributes<HTMLSelectElement>;
-    element?: HTMLSelectElement,  // bindable
+    attributes?: HTMLAttributes<HTMLInputElement>;
+    element?: HTMLInputElement,  // bindable
   };
-  export type SelectOption = Map<string, string>;
-  export type PartSelectField = typeof PART_SELECT_FIELD[number];
-  export const PART_SELECT_FIELD = [
+  export type PartSlider = typeof PART_SLIDER[number];
+  export const PART_SLIDER = [
     PART.WHOLE,
     PART.MIDDLE,
     PART.MAIN,
@@ -42,29 +43,30 @@
   import type { Snippet } from "svelte";
   import { STATE, PART } from "$lib/const";
   import { htmlId, getApplyStyle, omit } from "$lib/util";
-  import { stdSelectField } from "$lib/style";
+  import { stdSlider } from "$lib/style";
 </script>
 
 <!---------------------------------------->
 
 <script lang="ts">
-  let { options = $bindable(), label, req, aux = $bindable(), left, right, bottom = $bindable(), status = $bindable(STATE.DEFAULT), value = $bindable(""), placeholder, test = $bindable(), validation, style, action, events, attributes, element = $bindable()}: Props = $props();
+  let { min = $bindable(), max = $bindable(), step = $bindable(1), label, req, aux = $bindable(), left, right, bottom = $bindable(), status = $bindable(STATE.DEFAULT), value = $bindable(Math.ceil((min+max)/2)), options = $bindable(), test = $bindable(), validation, style, action, events, attributes, element = $bindable()}: Props = $props();
 
   /*** Initialize ***/
   test = () => testValue();
   const id = attributes?.id ?? htmlId.get();
   const lid = label === undefined ? undefined : htmlId.get();
-  const opts = $derived(Array.from(options.entries(), ([label, val]) => ({ label, val, select: val===value })));
-  const attr = omit({...attributes}, ["id"]);
+  const list = options === undefined ? undefined : htmlId.get();
+  const attr = omit({...attributes}, ["id", "disabled", "type", "value", "min", "max", "step", "list"]);
   const ev = omit({...events}, ["onchange"]);
   const partDefault = { bottom, aux };
   let disabled = $derived(status === STATE.DISABLE);
+  if (typeof step === "number" && step <= 0) { step = 1; }
 
   /*** Sync with outside ***/
 
   /*** Styling ***/
-  const myStyleSet = style === undefined ? stdSelectField : stdSelectField.toMerge(style);
-  let myStyle = $derived(getApplyStyle(myStyleSet, PART_SELECT_FIELD as SubTuple<PartTuple>, status));
+  const myStyleSet = style === undefined ? stdSlider : stdSlider.toMerge(style);
+  let myStyle = $derived(getApplyStyle(myStyleSet, PART_SLIDER as SubTuple<PartTuple>, status));
 
   /*** Status ***/
   function setDefault() {
@@ -91,11 +93,7 @@
   /*** Handle events ***/
   function onchange(ev: Event) {
     if (events?.["onchange"] !== undefined) { events["onchange"](ev); }
-    if (value === "") {
-      setDefault();
-    } else {
-      setValidateStatus(true);
-    }
+    setDefault();
   }
 </script>
 
@@ -126,23 +124,16 @@
       <span class={myStyle[PART.LEFT]}>{@render left()}</span>
     {/if}
     {#if typeof action === "function"}
-      <select bind:value bind:this={element} class={myStyle[PART.MAIN]} {id} {onchange} {disabled} {...attr} {...ev} use:action>
-        {#if typeof placeholder === "string"}
-          <option value="">{placeholder}</option>
-        {/if}
-        {#each opts as opt}
-          <option value={opt.val} selected={opt.select}>{opt.label}</option>
-        {/each}
-      </select>
+      <input type="range" bind:value bind:this={element} class={myStyle[PART.MAIN]} {id} {min} {max} {step} {list} {disabled} {onchange} {...attr} {...ev} use:action style="--rate:{(value-min)/(max-min)*100}%;" />
     {:else}
-      <select bind:value bind:this={element} class={myStyle[PART.MAIN]} {id} {onchange} {disabled} {...attr} {...ev}>
-        {#if typeof placeholder === "string"}
-          <option value="">{placeholder}</option>
-        {/if}
-        {#each opts as opt}
-          <option value={opt.val} selected={opt.select}>{opt.label}</option>
+      <input type="range" bind:value bind:this={element} class={myStyle[PART.MAIN]} {id} {min} {max} {step} {list} {disabled} {onchange} {...attr} {...ev} style="--rate:{(value-min)/(max-min)*100}%;" />
+    {/if}
+    {#if typeof options !== "undefined"}
+      <datalist id={list}>
+        {#each options as option}
+          <option value={option}></option>
         {/each}
-      </select>
+      </datalist>
     {/if}
     {#if typeof right === "string"}
       <span class={myStyle[PART.RIGHT]}>{right}</span>
@@ -154,3 +145,11 @@
     <output class={myStyle[PART.BOTTOM]}>{bottom}</output>
   {/if}
 </div>
+
+<!---------------------------------------->
+
+<style>
+  input[type="range"] {
+    background: linear-gradient(to right, var(--bgcolor-left) var(--rate), var(--bgcolor-right) var(--rate));
+  }
+</style>

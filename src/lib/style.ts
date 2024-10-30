@@ -1,10 +1,9 @@
 export {
-  // theme color
   themeColor,
-  // components
   stdTextField,
   // stdCheckField,
   stdSelectField,
+  stdSlider,
   stdField,
   stdButton,
   stdToggle,
@@ -12,9 +11,8 @@ export {
   stdChip,
   stdAccordion,
   stdTabs,
-  // asset
-  stdCross1,
-  stdArrow1,
+  stdModal,
+  stdContextMenu,
 }
 
 import { STATE, THEME } from "$lib/const";
@@ -22,20 +20,22 @@ import { ThemeColor, StyleSet } from "$lib/util";
 
 /********** Definition of standard style **********/
 const themeColor = new ThemeColor(
-  THEME.LIGHT, {
+  THEME.DARK, {
   [THEME.LIGHT]: {
-    canvas: "#e2e8ef",
-    active: "#03ab99",
-    inactive: "#7fa091",
-    charline: "#01413a",
-    invalid: "#ab0315",
+    canvas: "226 232 239",  // #e2e8ef
+    txtbdr: "1 65 58",      // #01413a
+    active: "3 171 153",    // #03ab99
+    inactive: "127 160 145",// #7fa091
+    invalid: "171 3 21",    // #ab0315
+    bright: "0.9",
   },
   [THEME.DARK]: {
-    canvas: "#1a1f24",
-    active: "#04d6c1",
-    inactive: "#5a7268",
-    charline: "#a0f0e6",
-    invalid: "#ff3b4e",
+    canvas: "26 31 36",     // #1a1f24
+    txtbdr: "160 240 230",  // #a0f0e6
+    active: "4 214 193",    // #04d6c1
+    inactive: "90 114 104", // #5a7268
+    invalid: "255 59 78",   // #ff3b4e
+    bright: "1.5",
   },
 });
 const stdTextField = new StyleSet({
@@ -48,18 +48,18 @@ const stdTextField = new StyleSet({
       padding: "px-0.5",
       display: "flex",
       border_width: "border-b",
-      border_color: "border-charline",
+      border_color: "border-txtbdr",
     },
     main: {
       padding: "pl-1",
       flex_grow: "grow",
       background_color: "bg-inherit",
-      color: "text-charline placeholder:text-inactive",
+      color: "text-txtbdr placeholder:text-inactive",
       outline_style: "focus:outline-none",
     },
     label: {
       font_family: "font-nsbold",
-      color: "text-charline",
+      color: "text-txtbdr",
     },
     req: {
       margin: "ml-1",
@@ -68,7 +68,7 @@ const stdTextField = new StyleSet({
     },
     bottom: {
       font_size: "text-sm",
-      color: "text-charline",
+      color: "text-txtbdr",
     },
     left: {
       width: "w-fit",
@@ -95,21 +95,21 @@ const stdSelectField = new StyleSet({
     middle: {
       margin: "-my-1",
       border_width: "border-b",
-      border_color: "border-charline",
+      border_color: "border-txtbdr",
     },
     main: {
       width: "w-full",
       background_color: "bg-inherit",
-      color: "text-charline has-[option:checked[value='']]:text-inactive",
+      color: "text-txtbdr has-[option:checked[value='']]:text-inactive",
       outline_style: "focus:outline-none",
     },
     label: {
       font_family: "font-nsbold",
-      color: "text-charline",
+      color: "text-txtbdr",
     },
     bottom: {
       font_size: "text-sm",
-      color: "text-charline",
+      color: "text-txtbdr",
     },
   },
   [STATE.INVALID]: {
@@ -122,6 +122,25 @@ const stdSelectField = new StyleSet({
     bottom: {
       color: "text-invalid",
     },
+  },
+});
+const stdSlider = new StyleSet({
+  [STATE.DEFAULT]: {
+    whole: {
+      margin: "",
+    },
+    main: {
+      appearance: "appearance-none [&::-webkit-slider-thumb]:appearance-none",
+      outline_style: "outline-none",
+      width: "[&::-webkit-slider-thumb]:w-4 [&::-moz-range-thumb]:w-4",
+      height: "h-1.5 [&::-webkit-slider-thumb]:h-4 [&::-moz-range-thumb]:h-4",
+      background_color: "[&::-webkit-slider-thumb]:bg-active [&::-moz-range-thumb]:bg-active",
+      border_width: "[&::-webkit-slider-thumb]:border-4 [&::-webkit-slider-thumb]:active:border-2 [&::-webkit-slider-thumb]:hover:border-2 [&::-moz-range-thumb]:border-4 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-2",
+      border_color: "[&::-webkit-slider-thumb]:border-txtbdr [&::-moz-range-thumb]:border-txtbdr",
+      border_style: "[&::-webkit-slider-thumb]:border-solid [&::-moz-range-thumb]:border-solid" ,
+      border_radius: "rounded-full [&::-webkit-slider-thumb]:rounded-full [&::-moz-range-thumb]:rounded-full",
+      others: "[--bgcolor-left:--color-active] [--bgcolor-right:--color-txtbdr]",
+    }
   },
 });
 const stdField = new StyleSet({
@@ -141,7 +160,7 @@ const stdField = new StyleSet({
     },
     label: {
       font_family: "font-nsbold",
-      color: "text-charline",
+      color: "text-txtbdr",
     },
     req: {
       font_size: "text-sm",
@@ -149,7 +168,7 @@ const stdField = new StyleSet({
     },
     bottom: {
       font_size: "text-sm",
-      color: "text-charline",
+      color: "text-txtbdr",
     },
   },
   [STATE.INVALID]: {
@@ -295,7 +314,7 @@ const stdAccordion = new StyleSet({
       margin: "mt-5",
       border_radius: "rounded-lg",
       border_width: "border",
-      border_color: "border-charline",
+      border_color: "border-txtbdr",
       overflow: "overflow-hidden",
       transition_duration: "duration-75",
     },
@@ -307,7 +326,7 @@ const stdAccordion = new StyleSet({
       align_items: "items-center",
       font_family: "font-nsbold",
       color: "text-canvas",
-      background_color: "bg-charline",
+      background_color: "bg-txtbdr",
       list_style_type: "list-none",
       cursor: "cursor-pointer",
       user_select: "select-none",
@@ -320,7 +339,7 @@ const stdAccordion = new StyleSet({
       gap: "gap-2",
       divide_width: "divide-y",
       divide_color: "divide-inactive",
-      color: "text-charline",
+      color: "text-txtbdr",
     }
   },
 });
@@ -364,12 +383,32 @@ const stdTabs = new StyleSet({
   },
   [STATE.ACTIVE]: {
     label: {
-      color: "text-charline",
+      color: "text-txtbdr",
       border_width: "border-b-2",
-      border_color: "border-charline",
+      border_color: "border-txtbdr",
     }
   },
 });
-
-const stdCross1 = "h-2.5 w-2.5 fill-white/70 hover:fill-white";
-const stdArrow1 = "h-5 w-5 fill-charline";
+const stdModal = new StyleSet({
+  [STATE.DEFAULT]: {
+    whole: {
+      margin: "",
+    },
+  },
+});
+const stdContextMenu = new StyleSet({
+  [STATE.DEFAULT]: {
+    whole: {
+      width: "w-fit",
+      height: "h-fit",
+      background_color: "bg-canvas/90",
+      border_radius: "rounded-sm",
+      overflow: "overflow-hidden",
+    },
+    main: {
+      display: "flex",
+      flex_direction: "flex-col",
+      flex_wrap: "flex-nowrap",
+    }
+  },
+});

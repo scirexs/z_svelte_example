@@ -27,16 +27,17 @@
     ascent-override: 95%;
   }
   :root {
-    --color-canvas: #000;
-    --color-active: #000;
-    --color-inactive: #000;
-    --color-charline: #000;
-    --color-invalid: #000;
+    --color-canvas: 0 0 0;
+    --color-txtbdr: 0 0 0;
+    --color-active: 0 0 0;
+    --color-inactive: 0 0 0;
+    --color-invalid: 0 0 0;
+    --color-bright: 1;
   }
   html {
     font-family: "NotoSansJP", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   }
   body {
-    background-color: var(--color-canvas);
+    background-color: rgb(var(--color-canvas));
   }
 }

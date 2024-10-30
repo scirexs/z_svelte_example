@@ -64,21 +64,23 @@
 <!---------------------------------------->
 
 <div class={myStyle[PART.WHOLE]} role="group" aria-labelledby={lid}>
-  <div class={myStyle[PART.TOP]}>
-    {#if typeof label === "string"}
-      <span class={myStyle[PART.LABEL]} id={lid}>{label}</span>
-    {/if}
-    {#if typeof req === "string"}
-      <span class={myStyle[PART.REQ]}>{req}</span>
-    {:else if typeof req === "function"}
-      <span class={myStyle[PART.REQ]}>{@render req()}</span>
-    {/if}
-    {#if typeof aux === "string"}
-      <span class={myStyle[PART.AUX]}>{aux}</span>
-    {:else if typeof aux === "function"}
-      <span class={myStyle[PART.AUX]}>{@render aux()}</span>
-    {/if}
-  </div>
+  {#if myStyle[PART.TOP] || label !== undefined || req !== undefined || aux !== undefined}
+    <div class={myStyle[PART.TOP]}>
+      {#if typeof label === "string"}
+        <span class={myStyle[PART.LABEL]} id={lid}>{label}</span>
+      {/if}
+      {#if typeof req === "string"}
+        <span class={myStyle[PART.REQ]}>{req}</span>
+      {:else if typeof req === "function"}
+        <span class={myStyle[PART.REQ]}>{@render req()}</span>
+      {/if}
+      {#if typeof aux === "string"}
+        <span class={myStyle[PART.AUX]}>{aux}</span>
+      {:else if typeof aux === "function"}
+        <span class={myStyle[PART.AUX]}>{@render aux()}</span>
+      {/if}
+    </div>
+  {/if}
   <div class={myStyle[PART.MIDDLE]}>
     {#if typeof left === "string"}
       <span class={myStyle[PART.LEFT]}>{left}</span>
