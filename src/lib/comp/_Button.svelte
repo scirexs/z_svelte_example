@@ -39,7 +39,7 @@
 
   /*** Initialize ***/
   onclick = onclick ?? events?.["onclick"];
-  const attr = omit({...attributes}, ["type"]);
+  const attr = omit({...attributes}, ["class", "type", "disabled"]);
   const ev = omit({...events}, ["onclick"]);
   let disabled = $derived(status === STATE.DISABLE);
 

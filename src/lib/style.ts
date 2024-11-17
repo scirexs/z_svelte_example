@@ -7,20 +7,21 @@ export {
   stdField,
   stdButton,
   stdToggle,
-  // stdSwitch,
+  stdSwitch,
   stdChip,
+  stdColorPicker,
   stdAccordion,
   stdTabs,
   stdModal,
   stdContextMenu,
+  stdThemeSwitch,
 }
 
 import { STATE, THEME } from "$lib/const";
 import { ThemeColor, StyleSet } from "$lib/util";
 
 /********** Definition of standard style **********/
-const themeColor = new ThemeColor(
-  THEME.DARK, {
+const themeColor = new ThemeColor({
   [THEME.LIGHT]: {
     canvas: "226 232 239",  // #e2e8ef
     txtbdr: "1 65 58",      // #01413a
@@ -282,6 +283,36 @@ const stdToggle = new StyleSet({
     },
   },
 });
+const stdSwitch = new StyleSet({
+  [STATE.DEFAULT]: {
+    whole: {
+      margin: "m-5",
+    },
+    main: {
+      width: "w-12",
+      height: "h-6",
+      border_radius: "rounded-2xl",
+      background_color: "bg-inactive",
+    },
+    aux: {
+      width: "w-2/5",
+      height: "h-4/5",
+      position: "top-[9%] left-[9%]",
+      border_radius: "rounded-full",
+      background_color: "bg-white",
+      transition_property: "transition",
+      transition_duration: "duration-300",
+    },
+  },
+  [STATE.ACTIVE]: {
+    main: {
+      background_color: "bg-active",
+    },
+    aux: {
+      transform: "translate-x-[110%]"
+    },
+  },
+});
 const stdChip = new StyleSet({
   [STATE.DEFAULT]: {
     whole: {
@@ -306,6 +337,17 @@ const stdChip = new StyleSet({
   [STATE.INVALID]: {
     whole: {}
   },
+});
+const stdColorPicker = new StyleSet({
+  [STATE.DEFAULT]: {
+    whole: {
+      margin: "m-2",
+    },
+    main: {
+      width: "w-10",
+      height: "h-10",
+    }
+  }
 });
 const stdAccordion = new StyleSet({
   [STATE.DEFAULT]: {
@@ -404,11 +446,42 @@ const stdContextMenu = new StyleSet({
       background_color: "bg-canvas/90",
       border_radius: "rounded-sm",
       overflow: "overflow-hidden",
+      z_index: "z-40",
     },
     main: {
       display: "flex",
       flex_direction: "flex-col",
       flex_wrap: "flex-nowrap",
     }
+  },
+});
+const stdThemeSwitch = new StyleSet({
+  [STATE.DEFAULT]: {
+    whole: {
+      margin: "m-5",
+    },
+    main: {
+      width: "w-12",
+      height: "h-6",
+      border_radius: "rounded-2xl",
+      background_color: "bg-inactive",
+    },
+    aux: {
+      width: "w-2/5",
+      height: "h-4/5",
+      position: "top-[9%] left-[9%]",
+      border_radius: "rounded-full",
+      background_color: "bg-white",
+      transition_property: "transition",
+      transition_duration: "duration-300",
+    },
+  },
+  [STATE.ACTIVE]: {
+    main: {
+      background_color: "bg-active",
+    },
+    aux: {
+      transform: "translate-x-[110%]"
+    },
   },
 });

@@ -55,7 +55,7 @@
   const id = attributes?.id ?? htmlId.get();
   const lid = label === undefined ? undefined : htmlId.get();
   const list = options === undefined ? undefined : htmlId.get();
-  const attr = omit({...attributes}, ["id", "disabled", "type", "value", "placeholder", "list"]);
+  const attr = omit({...attributes}, ["class", "id", "disabled", "type", "value", "placeholder", "list"]);
   const ev = omit({...events}, ["onchange"]);
   const partDefault = { bottom, aux };
   let disabled = $derived(status === STATE.DISABLE);

@@ -44,8 +44,9 @@ class ThemeColor {
   #themeset: DefineTheme;
   #theme: Theme;
 
-  constructor(initTheme: Theme, definition: DefineTheme) {
+  constructor(definition: DefineTheme, initTheme?: Theme) {
     this.#themeset = definition;
+    if (!initTheme) { initTheme = ThemeColor.isSystemThemeLight() ? THEME.LIGHT : THEME.DARK }
     this.#theme = initTheme;
     this.#switch();
   }
@@ -55,6 +56,7 @@ class ThemeColor {
     for (const [varname, color] of Object.entries(this.#themeset[this.#theme])) {
       document.documentElement.style.setProperty(ThemeColor.VAR_PREFIX+varname, color);
     }
+    document.documentElement.style.colorScheme = this.#theme;
   }
   toLight() { this.theme = THEME.LIGHT; }
   toDark()  { this.theme = THEME.DARK; }
@@ -63,6 +65,10 @@ class ThemeColor {
   set theme(value: Theme) {
     this.#theme = value;
     this.#switch();
+  }
+
+  static isSystemThemeLight() {
+    return browser && window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
   }
 }
 

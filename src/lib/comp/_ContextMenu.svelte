@@ -4,8 +4,8 @@
     children: Snippet,
     status?: State,  // bindable, [STATE.DEFAULT]
     open?: boolean,  // bindable, [false]
-    posX?: number,   // bindable, [0]
-    posY?: number,   // bindable, [0]
+    pos?: { x: number, y: number },   // bindable, [{x:0, y:0}]
+    auto?: boolean,  // [true]
     style?: DefineStateStyle | DefineStyle,
     element?: HTMLElement,  // bindable
   };
@@ -18,7 +18,7 @@
   /*** Others ***/
 
   /*** import ***/
-  import { type Snippet } from "svelte";
+  import { type Snippet, untrack } from "svelte";
   import { STATE, PART } from "$lib/const";
   import { getApplyStyle } from "$lib/util";
   import { stdContextMenu } from "$lib/style";
@@ -27,9 +27,10 @@
 <!---------------------------------------->
 
 <script lang="ts">
-  let { children, status = $bindable(STATE.DEFAULT), open = $bindable(false), posX = $bindable(0), posY = $bindable(0), style, element = $bindable() }: Props = $props();
+  let { children, status = $bindable(STATE.DEFAULT), open = $bindable(false), pos = $bindable({x:0,y:0}), auto = true, style, element = $bindable() }: Props = $props();
 
   /*** Initialize ***/
+  let visibility = $derived(open ? "visibility: visible;" : "visibility: hidden; z-index: -9999;");
 
   /*** Sync with outside ***/
 
@@ -46,20 +47,20 @@
   /*** Handle events ***/
   function show(ev: MouseEvent) {
     ev.preventDefault();
+
+    const menu = { width: element?.offsetWidth ?? 0, height: element?.offsetHeight ?? 0 };
+    pos.x = window.innerWidth-ev.clientX < menu.width ? ev.clientX-menu.width : ev.clientX;
+    pos.y = window.innerHeight-ev.clientY < menu.height ? (ev.clientY < menu.height ? ev.clientY : ev.clientY-menu.height) : ev.clientY;
     open = true
-    posX = ev.clientX;
-    posY = ev.clientY;
   }
   function hide() { open = false; }
 </script>
 
 <!---------------------------------------->
-<svelte:document oncontextmenu={show} onclick={hide} />
+<svelte:document oncontextmenu={auto ? show : undefined} onclick={hide} />
 
-{#if open}
-<nav class={myStyle[PART.WHOLE]} style={`position: absolute; left:${posX}px; top:${posY}px`} bind:this={element}>
+<nav class={myStyle[PART.WHOLE]} style={`position: absolute; left:${pos.x}px; top:${pos.y}px; ${visibility}`} bind:this={element}>
   <div class={myStyle[PART.MAIN]}>
     {@render children()}
   </div>
 </nav>
-{/if}

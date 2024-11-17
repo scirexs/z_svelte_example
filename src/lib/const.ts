@@ -1,6 +1,6 @@
 export const THEME = {
-  LIGHT: "l",
-  DARK: "d",
+  LIGHT: "light",
+  DARK: "dark",
 } as const;
 export const ENTRY = {
   KEY: 0,
