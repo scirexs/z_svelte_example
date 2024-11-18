@@ -52,7 +52,7 @@
 
   /*** Initialize ***/
   test = () => testValue();
-  const id = attributes?.id ?? htmlId.get();
+  const id = attributes?.id !== undefined ? attributes.id : label === undefined ? undefined : htmlId.get();
   const lid = label === undefined ? undefined : htmlId.get();
   const opts = $derived(Array.from(options.entries(), ([label, val]) => ({ label, val, select: val===value })));
   const attr = omit({...attributes}, ["id"]);

@@ -52,7 +52,7 @@
 
   /*** Initialize ***/
   test = () => testValue();
-  const id = attributes?.id ?? htmlId.get();
+  const id = attributes?.id !== undefined ? attributes.id : label === undefined ? undefined : htmlId.get();
   const lid = label === undefined ? undefined : htmlId.get();
   const list = options === undefined ? undefined : htmlId.get();
   const attr = omit({...attributes}, ["class", "id", "disabled", "type", "value", "placeholder", "list"]);

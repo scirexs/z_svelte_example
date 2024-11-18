@@ -18,7 +18,7 @@
     style?: DefineStateStyle | DefineStyle,
     action?: Action,
     events?: EventSet,
-    attributes?: HTMLAttributes<HTMLInputElement>;
+    attributes?: HTMLAttributes<HTMLInputElement>,
     element?: HTMLInputElement,  // bindable
   };
   export type PartSlider = typeof PART_SLIDER[number];
@@ -53,13 +53,14 @@
 
   /*** Initialize ***/
   test = () => testValue();
-  const id = attributes?.id ?? htmlId.get();
+  const id = attributes?.id !== undefined ? attributes.id : label === undefined ? undefined : htmlId.get();
   const lid = label === undefined ? undefined : htmlId.get();
   const list = options === undefined ? undefined : htmlId.get();
   const attr = omit({...attributes}, ["id", "disabled", "type", "value", "min", "max", "step", "list"]);
   const ev = omit({...events}, ["onchange"]);
   const partDefault = { bottom, aux };
   let disabled = $derived(status === STATE.DISABLE);
+  let rate = $derived((value-min)/(max-min)*100);
   if (typeof step === "number" && step <= 0) { step = 1; }
 
   /*** Sync with outside ***/
@@ -124,9 +125,9 @@
       <span class={myStyle[PART.LEFT]}>{@render left()}</span>
     {/if}
     {#if typeof action === "function"}
-      <input type="range" bind:value bind:this={element} class={myStyle[PART.MAIN]} {id} {min} {max} {step} {list} {disabled} {onchange} {...attr} {...ev} use:action style="--rate:{(value-min)/(max-min)*100}%;" />
+      <input type="range" bind:value bind:this={element} class={myStyle[PART.MAIN]} style={`background:linear-gradient(to right, rgb(var(--color-active)) ${rate}%, rgb(var(--color-inactive)) ${rate}%);`} {id} {min} {max} {step} {list} {disabled} {onchange} {...attr} {...ev} use:action />
     {:else}
-      <input type="range" bind:value bind:this={element} class={myStyle[PART.MAIN]} {id} {min} {max} {step} {list} {disabled} {onchange} {...attr} {...ev} style="--rate:{(value-min)/(max-min)*100}%;" />
+      <input type="range" bind:value bind:this={element} class={myStyle[PART.MAIN]} style={`background:linear-gradient(to right, rgb(var(--color-active)) ${rate}%, rgb(var(--color-inactive)) ${rate}%);`} {id} {min} {max} {step} {list} {disabled} {onchange} {...attr} {...ev} />
     {/if}
     {#if typeof options !== "undefined"}
       <datalist id={list}>
@@ -145,11 +146,3 @@
     <output class={myStyle[PART.BOTTOM]}>{bottom}</output>
   {/if}
 </div>
-
-<!---------------------------------------->
-
-<style>
-  input[type="range"] {
-    background: linear-gradient(to right, var(--bgcolor-left) var(--rate), var(--bgcolor-right) var(--rate));
-  }
-</style>
