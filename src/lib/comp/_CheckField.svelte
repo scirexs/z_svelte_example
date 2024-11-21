@@ -5,28 +5,26 @@
     label?: string,
     req?: string | Snippet,
     aux?: string | Snippet,  // bindable
-    left?: string | Snippet,
-    right?: string | Snippet,
     bottom?: string,  // bindable
     status?: State,  // bindable, [STATE.DEFAULT]
-    value?: string,  // bindable, [""]
-    placeholder?: string,
+    values?: string[],  // bindable, [[]]
+    name?: string,
+    multiple?: boolean  // [false]
     test?: () => boolean,  // bindable
-    validation?: (value: string) => [boolean, string?, (string | Snippet)?],
+    validation?: (values: string[]) => [boolean, string?, (string | Snippet)?],
     style?: DefineStateStyle | DefineStyle,
     action?: Action,
     events?: EventSet,
-    attributes?: HTMLAttributes<HTMLSelectElement>;
-    element?: HTMLSelectElement,  // bindable
+    attributes?: HTMLAttributes<HTMLInputElement>;
+    elements?: HTMLInputElement[],  // bindable
   };
   export type Options = SvelteMap<string, string> | Map<string, string>;
-  export type PartSelectField = typeof PART_SELECT_FIELD[number];
-  export const PART_SELECT_FIELD = [
+  export type PartCheckField = typeof PART_CHECK_FIELD[number];
+  export const PART_CHECK_FIELD = [
     PART.WHOLE,
     PART.MIDDLE,
     PART.MAIN,
     PART.TOP,
-    PART.LEFT,
     PART.RIGHT,
     PART.BOTTOM,
     PART.LABEL,
@@ -40,32 +38,36 @@
   import { type Action } from "svelte/action";
   import { type HTMLAttributes } from "svelte/elements";
   import { type SvelteMap } from "svelte/reactivity";
-  import { type Snippet } from "svelte";
+  import { type Snippet, untrack } from "svelte";
   import { STATE, PART } from "$lib/const";
   import { htmlId, getApplyStyle, omit } from "$lib/util";
-  import { stdSelectField } from "$lib/style";
+  import { stdCheckField } from "$lib/style";
 </script>
 
 <!---------------------------------------->
 
 <script lang="ts">
-  let { options = $bindable(), label, req, aux = $bindable(), left, right, bottom = $bindable(), status = $bindable(STATE.DEFAULT), value = $bindable(""), placeholder, test = $bindable(), validation, style, action, events, attributes, element = $bindable()}: Props = $props();
+  let { options = $bindable(), label, req, aux = $bindable(), bottom = $bindable(), status = $bindable(STATE.DEFAULT), values = $bindable([]), name, multiple = false, test = $bindable(), validation, style, action, events, attributes, elements = $bindable([])}: Props = $props();
 
   /*** Initialize ***/
   test = () => testValue();
-  const id = attributes?.id !== undefined ? attributes.id : label === undefined ? undefined : htmlId.get();
   const lid = label === undefined ? undefined : htmlId.get();
-  const opts = $derived(Array.from(options.entries(), ([val, text]) => ({ val, text, selected: val===value })));
-  const attr = omit({...attributes}, ["class", "id", "disabled", "value"]);
+  const opts = $derived(Array.from(options.entries(), ([val, text]) => ({ val, text, checked: values.includes(val) })));
+  const type = multiple ? "checkbox" : "radio";
+  const nm = name ?? htmlId.get();
+  const attr = omit({...attributes}, ["class", "id", "type", "name", "disabled", "value"]);
   const ev = omit({...events}, ["onchange"]);
   const partDefault = { bottom, aux };
   let disabled = $derived(status === STATE.DISABLE);
 
   /*** Sync with outside ***/
+  $effect.pre(() => { options;
+    untrack(() => { elements = Array(options.size).fill(undefined); });
+  });
 
   /*** Styling ***/
-  const myStyleSet = style === undefined ? stdSelectField : stdSelectField.toMerge(style);
-  let myStyle = $derived(getApplyStyle(myStyleSet, PART_SELECT_FIELD as SubTuple<PartTuple>, status));
+  const myStyleSet = style === undefined ? stdCheckField : stdCheckField.toMerge(style);
+  let myStyle = $derived(getApplyStyle(myStyleSet, PART_CHECK_FIELD as SubTuple<PartTuple>, status));
 
   /*** Status ***/
   function setDefault() {
@@ -82,7 +84,7 @@
   /*** Validation ***/
   function testValue(): boolean {
     if (validation === undefined || status === STATE.DISABLE) { return true; }
-    const [result, bottom, aux] = validation(value);
+    const [result, bottom, aux] = validation(values);
     setValidateStatus(result, bottom, aux);
     return result;
   }
@@ -92,10 +94,14 @@
   /*** Handle events ***/
   function onchange(ev: Event) {
     if (events?.["onchange"] !== undefined) { events["onchange"](ev); }
-    if (value === "") {
-      setDefault();
-    } else {
+    const elem = ev.target as HTMLInputElement;
+    if (!elem) { return; }
+    if (elem.checked) {
+      values = multiple ? opts.map(x => x.val).filter(x => [...values, elem.value].includes(x)) : [elem.value];
       setValidateStatus(true);
+    } else {
+      values = values.filter(x => x !== elem.value);
+      if (values.length <= 0) { setDefault(); } else { setValidateStatus(true); }
     }
   }
 </script>
@@ -106,7 +112,7 @@
   {#if myStyle[PART.TOP] || label !== undefined || req !== undefined || aux !== undefined}
     <div class={myStyle[PART.TOP]}>
       {#if typeof label === "string"}
-        <label class={myStyle[PART.LABEL]} for={id} id={lid}>{label}</label>
+        <span class={myStyle[PART.LABEL]} id={lid}>{label}</span>
       {/if}
       {#if typeof req === "string"}
         <span class={myStyle[PART.REQ]}>{req}</span>
@@ -120,37 +126,18 @@
       {/if}
     </div>
   {/if}
-  <div class={myStyle[PART.MIDDLE]}>
-    {#if typeof left === "string"}
-      <span class={myStyle[PART.LEFT]}>{left}</span>
-    {:else if typeof left === "function"}
-      <span class={myStyle[PART.LEFT]}>{@render left()}</span>
-    {/if}
-    {#if typeof action === "function"}
-      <select bind:value bind:this={element} class={myStyle[PART.MAIN]} {id} {onchange} {disabled} {...attr} {...ev} use:action>
-        {@render tagOptions()}
-      </select>
-    {:else}
-      <select bind:value bind:this={element} class={myStyle[PART.MAIN]} {id} {onchange} {disabled} {...attr} {...ev}>
-        {@render tagOptions()}
-      </select>
-    {/if}
-    {#if typeof right === "string"}
-      <span class={myStyle[PART.RIGHT]}>{right}</span>
-    {:else if typeof right === "function"}
-      <span class={myStyle[PART.RIGHT]}>{@render right()}</span>
-    {/if}
+  <div class={myStyle[PART.MIDDLE]} role="group" aria-label={multiple ? "Check boxes" : "Radio buttons"}>
+    {#each opts as {text, val, checked}, i}
+      <label class={myStyle[PART.RIGHT]}>
+        {#if typeof action === "function"}
+          <input bind:this={elements[i]} value={val} name={nm} {type} {checked} {onchange} {disabled} {...attr} {...ev} use:action /> {text}
+        {:else}
+          <input bind:this={elements[i]} value={val} name={nm} {type} {checked} {onchange} {disabled} {...attr} {...ev} /> {text}
+        {/if}
+      </label>
+    {/each}
   </div>
   {#if typeof bottom === "string"}
     <output class={myStyle[PART.BOTTOM]}>{bottom}</output>
   {/if}
 </div>
-
-{#snippet tagOptions()}
-  {#if typeof placeholder === "string"}
-    <option value="">{placeholder}</option>
-  {/if}
-  {#each opts as {val, text, selected}}
-    <option value={val} {selected}>{text}</option>
-  {/each}
-{/snippet}

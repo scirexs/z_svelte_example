@@ -7,6 +7,7 @@ export default {
         "nsbold": ["NSJP-Centered", "sans-serif"],
       },
       colors: {
+        system: "rgb(var(--color-system))",
         canvas: "rgb(var(--color-canvas))",
         txtbdr: "rgb(var(--color-txtbdr))",
         active: "rgb(var(--color-active))",

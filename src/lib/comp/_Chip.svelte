@@ -19,7 +19,7 @@
   /*** Others ***/
 
   /*** import ***/
-  import { type Snippet, untrack } from "svelte";
+  import { type Snippet } from "svelte";
   import { STATE, PART } from "$lib/const";
   import { getApplyStyle } from "$lib/util";
   import { stdChip } from "$lib/style";

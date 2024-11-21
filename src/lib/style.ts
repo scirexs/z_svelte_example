@@ -1,20 +1,20 @@
 export {
   themeColor,
   stdTextField,
-  // stdCheckField,
   stdSelectField,
-  stdSlider,
+  stdCheckField,
   stdField,
   stdButton,
   stdToggle,
   stdSwitch,
-  stdChip,
+  stdThemeSwitch,
+  stdSlider,
   stdColorPicker,
+  stdChip,
   stdAccordion,
   stdTabs,
   stdModal,
   stdContextMenu,
-  stdThemeSwitch,
 }
 
 import { STATE, THEME } from "$lib/const";
@@ -23,6 +23,7 @@ import { ThemeColor, StyleSet } from "$lib/util";
 /********** Definition of standard style **********/
 const themeColor = new ThemeColor({
   [THEME.LIGHT]: {
+    system: "243 243 243",  // #f3f3f3
     canvas: "226 232 239",  // #e2e8ef
     txtbdr: "1 65 58",      // #01413a
     active: "3 171 153",    // #03ab99
@@ -31,6 +32,7 @@ const themeColor = new ThemeColor({
     bright: "0.9",
   },
   [THEME.DARK]: {
+    system: "31 31 31",     // #1f1f1f
     canvas: "26 31 36",     // #1a1f24
     txtbdr: "160 240 230",  // #a0f0e6
     active: "4 214 193",    // #04d6c1
@@ -38,7 +40,7 @@ const themeColor = new ThemeColor({
     invalid: "255 59 78",   // #ff3b4e
     bright: "1.5",
   },
-});
+},THEME.DARK);  // initial theme, if no value, auto detect
 const stdTextField = new StyleSet({
   [STATE.DEFAULT]: {
     whole: {
@@ -125,23 +127,41 @@ const stdSelectField = new StyleSet({
     },
   },
 });
-const stdSlider = new StyleSet({
+const stdCheckField = new StyleSet({
   [STATE.DEFAULT]: {
     whole: {
-      margin: "",
+      margin: "mb-2.5",
+    },
+    middle: {
+      margin: "-my-1",
+      border_width: "border-b",
+      border_color: "border-txtbdr",
     },
     main: {
-      appearance: "appearance-none [&::-webkit-slider-thumb]:appearance-none",
-      outline_style: "outline-none",
-      width: "[&::-webkit-slider-thumb]:w-4 [&::-moz-range-thumb]:w-4",
-      height: "h-1.5 [&::-webkit-slider-thumb]:h-4 [&::-moz-range-thumb]:h-4",
-      background_color: "[&::-webkit-slider-thumb]:bg-active [&::-moz-range-thumb]:bg-active",
-      border_width: "[&::-webkit-slider-thumb]:border-4 [&::-webkit-slider-thumb]:active:border-2 [&::-webkit-slider-thumb]:hover:border-2 [&::-moz-range-thumb]:border-4 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-2",
-      border_color: "[&::-webkit-slider-thumb]:border-txtbdr [&::-moz-range-thumb]:border-txtbdr",
-      border_style: "[&::-webkit-slider-thumb]:border-solid [&::-moz-range-thumb]:border-solid" ,
-      border_radius: "rounded-full [&::-webkit-slider-thumb]:rounded-full [&::-moz-range-thumb]:rounded-full",
-      others: "[--bgcolor-left:--color-active] [--bgcolor-right:--color-txtbdr]",
-    }
+      width: "w-full",
+      background_color: "bg-inherit",
+      color: "text-txtbdr has-[option:checked[value='']]:text-inactive",
+      outline_style: "focus:outline-none",
+    },
+    label: {
+      font_family: "font-nsbold",
+      color: "text-txtbdr",
+    },
+    bottom: {
+      font_size: "text-sm",
+      color: "text-txtbdr",
+    },
+  },
+  [STATE.INVALID]: {
+    label: {
+      color: "text-invalid",
+    },
+    middle: {
+      border_color: "border-invalid",
+    },
+    bottom: {
+      color: "text-invalid",
+    },
   },
 });
 const stdField = new StyleSet({
@@ -313,6 +333,66 @@ const stdSwitch = new StyleSet({
     },
   },
 });
+const stdThemeSwitch = new StyleSet({
+  [STATE.DEFAULT]: {
+    whole: {
+      margin: "m-5",
+    },
+    main: {
+      width: "w-12",
+      height: "h-6",
+      border_radius: "rounded-2xl",
+      background_color: "bg-inactive",
+    },
+    aux: {
+      width: "w-2/5",
+      height: "h-4/5",
+      position: "top-[9%] left-[9%]",
+      border_radius: "rounded-full",
+      background_color: "bg-white",
+      transition_property: "transition",
+      transition_duration: "duration-300",
+    },
+  },
+  [STATE.ACTIVE]: {
+    main: {
+      background_color: "bg-active",
+    },
+    aux: {
+      transform: "translate-x-[110%]"
+    },
+  },
+});
+const stdSlider = new StyleSet({
+  [STATE.DEFAULT]: {
+    whole: {
+      margin: "",
+    },
+    main: {
+      appearance: "appearance-none [&::-webkit-slider-thumb]:appearance-none",
+      outline_style: "outline-none",
+      width: "[&::-webkit-slider-thumb]:w-4 [&::-moz-range-thumb]:w-4",
+      height: "h-1.5 [&::-webkit-slider-thumb]:h-4 [&::-moz-range-thumb]:h-4",
+      background_color: "[&::-webkit-slider-thumb]:bg-active [&::-moz-range-thumb]:bg-active",
+      border_width: "[&::-webkit-slider-thumb]:border-4 [&::-webkit-slider-thumb]:active:border-2 [&::-webkit-slider-thumb]:hover:border-2 [&::-moz-range-thumb]:border-4 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-2",
+      border_color: "[&::-webkit-slider-thumb]:border-txtbdr [&::-moz-range-thumb]:border-txtbdr",
+      border_style: "[&::-webkit-slider-thumb]:border-solid [&::-moz-range-thumb]:border-solid" ,
+      border_radius: "rounded-full [&::-webkit-slider-thumb]:rounded-full [&::-moz-range-thumb]:rounded-full",
+      others: "[--bgcolor-left:--color-active] [--bgcolor-right:--color-txtbdr]",
+    }
+  },
+});
+const stdColorPicker = new StyleSet({
+  [STATE.DEFAULT]: {
+    whole: {
+      margin: "m-2",
+    },
+    main: {
+      width: "w-10",
+      height: "h-10",
+    }
+  }
+});
 const stdChip = new StyleSet({
   [STATE.DEFAULT]: {
     whole: {
@@ -337,17 +417,6 @@ const stdChip = new StyleSet({
   [STATE.INVALID]: {
     whole: {}
   },
-});
-const stdColorPicker = new StyleSet({
-  [STATE.DEFAULT]: {
-    whole: {
-      margin: "m-2",
-    },
-    main: {
-      width: "w-10",
-      height: "h-10",
-    }
-  }
 });
 const stdAccordion = new StyleSet({
   [STATE.DEFAULT]: {
@@ -453,35 +522,5 @@ const stdContextMenu = new StyleSet({
       flex_direction: "flex-col",
       flex_wrap: "flex-nowrap",
     }
-  },
-});
-const stdThemeSwitch = new StyleSet({
-  [STATE.DEFAULT]: {
-    whole: {
-      margin: "m-5",
-    },
-    main: {
-      width: "w-12",
-      height: "h-6",
-      border_radius: "rounded-2xl",
-      background_color: "bg-inactive",
-    },
-    aux: {
-      width: "w-2/5",
-      height: "h-4/5",
-      position: "top-[9%] left-[9%]",
-      border_radius: "rounded-full",
-      background_color: "bg-white",
-      transition_property: "transition",
-      transition_duration: "duration-300",
-    },
-  },
-  [STATE.ACTIVE]: {
-    main: {
-      background_color: "bg-active",
-    },
-    aux: {
-      transform: "translate-x-[110%]"
-    },
   },
 });

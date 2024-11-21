@@ -24,9 +24,9 @@
   /*** Others ***/
 
   /*** import ***/
-  import type { Action } from "svelte/action";
-  import type { HTMLAttributes } from "svelte/elements";
-  import type { Snippet } from "svelte";
+  import { type Action } from "svelte/action";
+  import { type HTMLAttributes } from "svelte/elements";
+  import { type Snippet } from "svelte";
   import { STATE, PART } from "$lib/const";
   import { getApplyStyle, omit } from "$lib/util";
   import { stdButton } from "$lib/style";

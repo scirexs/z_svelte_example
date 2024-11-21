@@ -11,6 +11,7 @@
     events?: EventSet,
     attributes?: HTMLAttributes<HTMLButtonElement>;
     element?: HTMLButtonElement,  // bindable
+    children?: Snippet,
   };
   export type PartSwitch = typeof PART_SWITCH[number];
   export const PART_SWITCH = [
@@ -25,8 +26,8 @@
 
   /*** import ***/
   import { type Snippet, untrack } from "svelte";
-  import type { Action } from "svelte/action";
-  import type { HTMLAttributes } from "svelte/elements";
+  import { type Action } from "svelte/action";
+  import { type HTMLAttributes } from "svelte/elements";
   import { STATE, PART } from "$lib/const";
   import { getApplyStyle, omit } from "$lib/util";
   import { stdSwitch } from "$lib/style";
@@ -35,7 +36,7 @@
 <!---------------------------------------->
 
 <script lang="ts">
-  let { label, left, right, status = $bindable(STATE.DEFAULT), value = $bindable(false), style, action, events, attributes, element = $bindable() }: Props = $props();
+  let { label, left, right, status = $bindable(STATE.DEFAULT), value = $bindable(false), style, action, events, attributes, element = $bindable(), children }: Props = $props();
 
   /*** Initialize ***/
   const attr = omit({...attributes}, ["class", "id", "type", "disabled", "role", "aria-checked"]);
@@ -75,11 +76,11 @@
   {/if}
   {#if typeof action === "function"}
     <button bind:this={element} class={myStyle[PART.MAIN]} style="position: relative;" type="button" role="switch" aria-checked={value} aria-label={label} {onclick} {disabled} {...attr} {...ev} use:action>
-      <span class={myStyle[PART.AUX]} style="position: absolute;"></span>
+      {@render thumb()}
     </button>
   {:else}
     <button bind:this={element} class={myStyle[PART.MAIN]} style="position: relative;" type="button" role="switch" aria-checked={value} aria-label={label} {onclick} {disabled} {...attr} {...ev}>
-      <span class={myStyle[PART.AUX]} style="position: absolute;"></span>
+      {@render thumb()}
     </button>
   {/if}
   {#if typeof right === "string"}
@@ -88,3 +89,13 @@
     <span class={myStyle[PART.RIGHT]}>{@render right()}</span>
   {/if}
 </span>
+
+{#snippet thumb()}
+  <span class={myStyle[PART.AUX]} style="position: absolute;">
+    {#if typeof children === "function"}
+      {@render children()}
+    {:else}
+      <!-- svelte-ignore block_empty -->
+    {/if}
+  </span>
+{/snippet}

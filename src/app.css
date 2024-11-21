@@ -27,6 +27,7 @@
     ascent-override: 95%;
   }
   :root {
+    --color-system: 0 0 0;
     --color-canvas: 0 0 0;
     --color-txtbdr: 0 0 0;
     --color-active: 0 0 0;

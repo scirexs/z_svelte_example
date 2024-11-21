@@ -19,8 +19,8 @@
   /*** Others ***/
 
   /*** import ***/
-  import type { Action } from "svelte/action";
-  import type { HTMLAttributes } from "svelte/elements";
+  import { type Action } from "svelte/action";
+  import { type HTMLAttributes } from "svelte/elements";
   import { STATE, PART } from "$lib/const";
   import { getApplyStyle, omit } from "$lib/util";
   import { stdColorPicker } from "$lib/style";
