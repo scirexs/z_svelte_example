@@ -4,7 +4,7 @@
     left?: string | Snippet,
     right?: string | Snippet,
     status?: State,  // bindable, [STATE.DEFAULT]
-    value?: boolean,  // bindable, [false]
+    light?: boolean,  // bindable, [false]
     style?: DefineStateStyle | DefineStyle,
     action?: Action,
     events?: EventSet,
@@ -35,7 +35,7 @@
 <!---------------------------------------->
 
 <script lang="ts">
-  let { left, right, status = $bindable(STATE.DEFAULT), value = $bindable(false), style, action, events, attributes, element = $bindable(), children }: Props = $props();
+  let { left, right, status = $bindable(STATE.DEFAULT), light = $bindable(false), style, action, events, attributes, element = $bindable(), children }: Props = $props();
 
   /*** Initialize ***/
   const attr = omit({...attributes}, ["class", "id", "type", "disabled", "role", "aria-checked"]);
@@ -43,7 +43,7 @@
   let disabled = $derived(status === STATE.DISABLE);
 
   /*** Sync with outside ***/
-  $effect.pre(() => { value; untrack(() => {
+  $effect.pre(() => { light; untrack(() => {
     setStatus();
     switchTheme();
   });});
@@ -54,19 +54,19 @@
 
   /*** Status ***/
   function setStatus() {
-    status = value ? STATE.ACTIVE : STATE.DEFAULT;
+    status = light ? STATE.ACTIVE : STATE.DEFAULT;
   }
 
   /*** Validation ***/
 
   /*** Others ***/
   function switchTheme() {
-    if (value) { themeColor.toDark(); } else { themeColor.toLight(); }
+    if (light) { themeColor.toLight(); } else { themeColor.toDark(); }
   }
 
   /*** Handle events ***/
   function onclick(ev: Event) {
-    value = !value;
+    light = !light;
     if (events?.["onclick"] !== undefined) { events["onclick"](ev); }
   }
 </script>
@@ -80,11 +80,11 @@
     <span class={myStyle[PART.LEFT]}>{@render left()}</span>
   {/if}
   {#if typeof action === "function"}
-    <button bind:this={element} class={myStyle[PART.MAIN]} style="position: relative;" type="button" role="switch" aria-checked={value} aria-label={"Switch theme color"} {onclick} {disabled} {...attr} {...ev} use:action>
+    <button bind:this={element} class={myStyle[PART.MAIN]} style="position: relative;" type="button" role="switch" aria-checked={light} aria-label={"Switch theme color"} {onclick} {disabled} {...attr} {...ev} use:action>
       {@render thumb()}
     </button>
   {:else}
-    <button bind:this={element} class={myStyle[PART.MAIN]} style="position: relative;" type="button" role="switch" aria-checked={value} aria-label={"Switch theme color"} {onclick} {disabled} {...attr} {...ev}>
+    <button bind:this={element} class={myStyle[PART.MAIN]} style="position: relative;" type="button" role="switch" aria-checked={light} aria-label={"Switch theme color"} {onclick} {disabled} {...attr} {...ev}>
       {@render thumb()}
     </button>
   {/if}
