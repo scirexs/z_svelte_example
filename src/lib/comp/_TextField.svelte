@@ -13,7 +13,7 @@
     placeholder?: string,
     options?: string[],  // bindable
     test?: () => boolean,  // bindable
-    validation?: (value: string, auto?: boolean) => [boolean, string?, (string | Snippet)?],
+    validation?: (value: string, auto?: boolean) => [boolean, string?, (string | Snippet)?],  // ([result, set at bottom, set at aux])
     style?: DefineStateStyle | DefineStyle | StyleSet,
     action?: Action,
     events?: EventSet,
@@ -72,10 +72,10 @@
     status = STATE.DEFAULT;
     ({ bottom, aux } = partDefault);
   }
-  function setValidateStatus(result: boolean, bottom?: string, aux?: string | Snippet) {
+  function setValidateStatus(result: boolean, setBottom?: string, setAux?: string | Snippet) {
     status = result ? STATE.ACTIVE : STATE.INVALID;
-    bottom = (partDefault.bottom !== undefined && bottom === undefined) ? partDefault.bottom : bottom;
-    aux = (partDefault.aux !== undefined && aux === undefined) ? partDefault.aux : aux;
+    bottom = (partDefault.bottom !== undefined && setBottom === undefined) ? partDefault.bottom : setBottom;
+    aux = (partDefault.aux !== undefined && setAux === undefined) ? partDefault.aux : setAux;
   }
 
   /*** Validation ***/
