@@ -9,7 +9,7 @@
     status?: State,  // bindable, [STATE.DEFAULT]
     value?: number,  // bindable,
     options?: number[],  // bindable
-    style?: DefineStateStyle | DefineStyle,
+    style?: DefineStateStyle | DefineStyle | StyleSet,
     action?: Action,
     events?: EventSet,
     attributes?: HTMLAttributes<HTMLInputElement>,

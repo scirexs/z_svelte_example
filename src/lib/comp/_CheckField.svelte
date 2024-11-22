@@ -12,7 +12,7 @@
     multiple?: boolean  // [false]
     test?: () => boolean,  // bindable
     validation?: (values: string[]) => [boolean, string?, (string | Snippet)?],
-    style?: DefineStateStyle | DefineStyle,
+    style?: DefineStateStyle | DefineStyle | StyleSet,
     action?: Action,
     events?: EventSet,
     attributes?: HTMLAttributes<HTMLInputElement>;

@@ -7,7 +7,7 @@
     status?: State,  // bindable, [STATE.DEFAULT]
     type?: "submit" | "reset" | "button",  // ["button"]
     onclick?: (ev: Event) => void,
-    style?: DefineStateStyle | DefineStyle,
+    style?: DefineStateStyle | DefineStyle | StyleSet,
     action?: Action,
     events?: EventSet,
     attributes?: HTMLAttributes<HTMLButtonElement>;

@@ -5,7 +5,7 @@
     right?: string | Snippet,
     status?: State,  // bindable, [STATE.DEFAULT]
     light?: boolean,  // bindable, [false]
-    style?: DefineStateStyle | DefineStyle,
+    style?: DefineStateStyle | DefineStyle | StyleSet,
     action?: Action,
     events?: EventSet,
     attributes?: HTMLAttributes<HTMLButtonElement>;

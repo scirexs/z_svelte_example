@@ -14,7 +14,7 @@
     options?: string[],  // bindable
     test?: () => boolean,  // bindable
     validation?: (value: string, auto?: boolean) => [boolean, string?, (string | Snippet)?],
-    style?: DefineStateStyle | DefineStyle,
+    style?: DefineStateStyle | DefineStyle | StyleSet,
     action?: Action,
     events?: EventSet,
     attributes?: HTMLAttributes<HTMLInputElement> | HTMLAttributes<HTMLTextAreaElement>;

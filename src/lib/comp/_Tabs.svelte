@@ -6,7 +6,7 @@
     statuses?: State[],  // bindable, [[]]
     active?: number,  // bindable, [initActive()]
     lock?: boolean,
-    style?: DefineStateStyle | DefineStyle,
+    style?: DefineStateStyle | DefineStyle | StyleSet,
     [key: string]: unknown | Snippet,
   };
   export type PartTabs = typeof PART_TABS[number];

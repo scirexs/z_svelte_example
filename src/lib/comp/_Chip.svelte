@@ -6,7 +6,7 @@
     right?: Snippet,
     status?: State,  // bindable, [STATE.DEFAULT]
     onclick?: (ev: Event) => void,
-    style?: DefineStateStyle | DefineStyle,
+    style?: DefineStateStyle | DefineStyle | StyleSet,
   };
   export type PartChip = typeof PART_CHIP[number];
   export const PART_CHIP = [

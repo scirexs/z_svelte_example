@@ -7,7 +7,7 @@
     open?: boolean,  // bindable, [false]
     group?: boolean[],  // bindable (to work accordions together), [[]]
     duration?: number,  // [400]
-    style?: DefineStateStyle | DefineStyle,
+    style?: DefineStateStyle | DefineStyle | StyleSet,
   };
   export type PartAccordion = typeof PART_ACCORDION[number];
   export const PART_ACCORDION = [

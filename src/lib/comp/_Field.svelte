@@ -9,7 +9,7 @@
     right?: string | Snippet,
     bottom?: string,  // bindable
     status?: State,  // bindable, [STATE.DEFAULT]
-    style?: DefineStateStyle | DefineStyle,
+    style?: DefineStateStyle | DefineStyle | StyleSet,
   };
   export type PartField = typeof PART_FIELD[number];
   export const PART_FIELD = [

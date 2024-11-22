@@ -5,7 +5,7 @@
     status?: State,  // bindable, [STATE.DEFAULT]
     open?: boolean,  // bindable, [false]
     closable?: boolean,  // [true]
-    style?: DefineStateStyle | DefineStyle,
+    style?: DefineStateStyle | DefineStyle | StyleSet,
     element?: HTMLDialogElement,  // bindable
   };
 

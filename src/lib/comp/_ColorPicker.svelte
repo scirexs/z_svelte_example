@@ -4,7 +4,7 @@
     status?: State,  // bindable, [STATE.DEFAULT]
     value?: string,  // bindable, ["#000000"]
     alpha?: number,  // bindable, [1]
-    style?: DefineStateStyle | DefineStyle,
+    style?: DefineStateStyle | DefineStyle | StyleSet,
     action?: Action,
     events?: EventSet,
     attributes?: HTMLAttributes<HTMLInputElement>;

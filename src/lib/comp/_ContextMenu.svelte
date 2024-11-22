@@ -6,7 +6,7 @@
     open?: boolean,  // bindable, [false]
     pos?: { x: number, y: number },   // bindable, [{x:0, y:0}]
     auto?: boolean,  // [true]
-    style?: DefineStateStyle | DefineStyle,
+    style?: DefineStateStyle | DefineStyle | StyleSet,
     element?: HTMLElement,  // bindable
   };
   export type PartContextMenu = typeof PART_CONTEXT_MENU[number];

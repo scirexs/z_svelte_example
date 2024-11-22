@@ -103,7 +103,7 @@ const stdSelectField = new StyleSet({
     main: {
       width: "w-full",
       background_color: "bg-inherit",
-      color: "text-txtbdr has-[option:checked[value='']]:text-inactive",
+      color: "text-txtbdr has-[option:checked[value='']]:text-inactive",  // for placeholder
       outline_style: "focus:outline-none",
     },
     label: {

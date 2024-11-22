@@ -13,7 +13,7 @@
     placeholder?: string,
     test?: () => boolean,  // bindable
     validation?: (value: string) => [boolean, string?, (string | Snippet)?],
-    style?: DefineStateStyle | DefineStyle,
+    style?: DefineStateStyle | DefineStyle | StyleSet,
     action?: Action,
     events?: EventSet,
     attributes?: HTMLAttributes<HTMLSelectElement>;
