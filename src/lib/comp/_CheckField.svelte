@@ -7,12 +7,12 @@
     aux?: string | Snippet,  // bindable
     bottom?: string,  // bindable
     status?: State,  // bindable, [STATE.DEFAULT]
-    values?: string[],  // bindable, [[]]
+    value?: string | string[],  // bindable
     name?: string,
     multiple?: boolean  // [false]
     test?: () => boolean,  // bindable
-    validation?: (values: string[]) => [boolean, string?, (string | Snippet)?],  // ([result, set at bottom, set at aux])
-    style?: DefineStateStyle | DefineStyle | StyleSet,
+    validation?: (value: string | string[]) => [boolean, string?, (string | Snippet)?],
+    style?: DefineStateStyle | DefineStyle,
     action?: Action,
     events?: EventSet,
     attributes?: HTMLAttributes<HTMLInputElement>;
@@ -47,12 +47,13 @@
 <!---------------------------------------->
 
 <script lang="ts">
-  let { options = $bindable(), label, req, aux = $bindable(), bottom = $bindable(), status = $bindable(STATE.DEFAULT), values = $bindable([]), name, multiple = false, test = $bindable(), validation, style, action, events, attributes, elements = $bindable([])}: Props = $props();
+  let { options = $bindable(), label, req, aux = $bindable(), bottom = $bindable(), status = $bindable(STATE.DEFAULT), value = $bindable(), name, multiple = false, test = $bindable(), validation, style, action, events, attributes, elements = $bindable([])}: Props = $props();
 
   /*** Initialize ***/
   test = () => testValue();
+  initValue();
   const lid = label === undefined ? undefined : htmlId.get();
-  const opts = $derived(Array.from(options.entries(), ([val, text]) => ({ val, text, checked: values.includes(val) })));
+  const opts = $derived(Array.from(options.entries(), ([val, text]) => ({ val, text, checked: multiple ? value?.includes(val) : val === value })));
   const type = multiple ? "checkbox" : "radio";
   const nm = name ?? htmlId.get();
   const attr = omit({...attributes}, ["class", "id", "type", "name", "disabled", "value"]);
@@ -75,21 +76,26 @@
     status = STATE.DEFAULT;
     ({ bottom, aux } = partDefault);
   }
-  function setValidateStatus(result: boolean, setBottom?: string, setAux?: string | Snippet) {
+  function setValidateStatus(result: boolean, bottom?: string, aux?: string | Snippet) {
     status = result ? STATE.ACTIVE : STATE.INVALID;
-    bottom = (partDefault.bottom !== undefined && setBottom === undefined) ? partDefault.bottom : setBottom;
-    aux = (partDefault.aux !== undefined && setAux === undefined) ? partDefault.aux : setAux;
+    bottom = (partDefault.bottom !== undefined && bottom === undefined) ? partDefault.bottom : bottom;
+    aux = (partDefault.aux !== undefined && aux === undefined) ? partDefault.aux : aux;
   }
 
   /*** Validation ***/
   function testValue(): boolean {
     if (validation === undefined || status === STATE.DISABLE) { return true; }
-    const [result, bottom, aux] = validation(values);
+    const [result, bottom, aux] = validation(value!);
     setValidateStatus(result, bottom, aux);
     return result;
   }
 
   /*** Others ***/
+  function initValue() {
+    value = (multiple && typeof value === "string") ? [] : value;
+    value = (!multiple && Array.isArray(value)) ? "" : value;
+    value = value ?? (multiple ? [] : "");
+  }
 
   /*** Handle events ***/
   function onchange(ev: Event) {
@@ -97,11 +103,11 @@
     const elem = ev.target as HTMLInputElement;
     if (!elem) { return; }
     if (elem.checked) {
-      values = multiple ? opts.map(x => x.val).filter(x => [...values, elem.value].includes(x)) : [elem.value];
+      value = multiple ? opts.map(x => x.val).filter(x => [...(value as string[]), elem.value].includes(x)) : elem.value;
       setValidateStatus(true);
     } else {
-      values = values.filter(x => x !== elem.value);
-      if (values.length <= 0) { setDefault(); } else { setValidateStatus(true); }
+      value = multiple ? (value as string[]).filter(x => x !== elem.value) : "";
+      if (value.length <= 0) { setDefault(); } else { setValidateStatus(true); }
     }
   }
 </script>
@@ -127,7 +133,7 @@
     </div>
   {/if}
   <div class={myStyle[PART.MIDDLE]} role="group" aria-label={multiple ? "Check boxes" : "Radio buttons"}>
-    {#each opts as {text, val, checked}, i}
+    {#each opts as {val, text, checked}, i}
       <label class={myStyle[PART.RIGHT]}>
         {#if typeof action === "function"}
           <input bind:this={elements[i]} value={val} name={nm} {type} {checked} {onchange} {disabled} {...attr} {...ev} use:action /> {text}
