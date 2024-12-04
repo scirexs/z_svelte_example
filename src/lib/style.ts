@@ -15,6 +15,7 @@ export {
   stdTabs,
   stdModal,
   stdContextMenu,
+  stdTooltip,
 }
 
 import { STATE, THEME } from "$lib/const";
@@ -522,5 +523,18 @@ const stdContextMenu = new StyleSet({
       flex_direction: "flex-col",
       flex_wrap: "flex-nowrap",
     }
+  },
+});
+const stdTooltip = new StyleSet({
+  [STATE.DEFAULT]: {
+    whole: {
+      padding: "py-0.5 px-1",
+      width: "w-fit",
+      height: "h-fit",
+      font_size: "text-xs",
+      background_color: "bg-system/90",
+      border_width: "border",
+      z_index: "z-50",
+    },
   },
 });
