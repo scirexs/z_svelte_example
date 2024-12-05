@@ -6,61 +6,69 @@
   ] as const;
 
   export function tooltip(node: HTMLElement, text: string): ActionReturn {
-    node.ariaDescription = text;
-    const unlisten = on(node, "mouseenter", showEvent(node, text));
-    return { destroy: unlisten };
+    return tooltipAction(node, text);
   }
   export function compTooltip(text: string): Action {
-    return (node) => {
-      node.ariaDescription = text;
-      const unlisten = on(node, "mouseenter", showEvent(node, text));
-      return { destroy: unlisten };
-    };
+    return (node) => { return tooltipAction(node, text); };
   }
 
   /*** Others ***/
   type Unlisten = () => void;
-
   const DELAY = 1000;
   const OFFSET = 5;
-  let lock = $state(false);
-  let visible = $state(false);
-  let tooltipText: string = $state("");
-  const position = { x: 0, y: 0 };
-  const pointer = {x: 0, y: 0};
+  const position = {
+    elem: { x: 0, y: 0 },
+    cursor: { x: 0, y: 0 },
+  };
+  const tempListener: Unlisten[] = [];
+  let timeoutId = 0;
+  let hrender = $state({ lock: false, visible: false, text: ""});
 
+  function tooltipAction(node: HTMLElement, text: string): ActionReturn {
+    node.ariaDescription = text;
+    const unlisten = on(node, "mouseenter", showEvent(node, text));
+    return { destroy: cleanup(unlisten) };
+  }
   function showEvent(node: HTMLElement, text: string): (ev: MouseEvent) => void {
-    let unlistenArray: Unlisten[] = [];
-
     return (ev) => {
-      tooltipText = text;
-      const id = setTimeout(()=>visible=true, DELAY);
-      unlistenArray.push(on(node, "mouseleave", hideEvent(id, unlistenArray)));
-      unlistenArray.push(on(node, "mousemove", trackPointer()));
+      show(text);
+      tempListener.push(on(node, "mouseleave", hideEvent()));
+      tempListener.push(on(node, "mousemove", trackCursor()));
     };
   }
-  function hideEvent(id: number, unlistenArray: Unlisten[]): (ev: MouseEvent) => void {
-    return (ev) => {
-      clearTimeout(id);
-      visible = false;
-      unlisten(unlistenArray);
-    };
+  function hideEvent(): (ev: MouseEvent) => void {
+    return (ev) => { hide(); };
   }
-  function trackPointer(): (ev: MouseEvent) => void {
+  function trackCursor(): (ev: MouseEvent) => void {
     return throttle(20, (ev) => {
-      if (visible) { return; }
-      pointer.x = ev.clientX;
-      pointer.y = ev.clientY;
+      if (hrender.visible) { return; }
+      position.cursor.x = ev.clientX;
+      position.cursor.y = ev.clientY;
     });
   }
-  function unlisten(unlistenArray: Unlisten[]) {
-    for (const u of unlistenArray) { u(); }
+  function show(text: string) {
+    if (timeoutId !== 0) { clearTimeout(timeoutId); }
+    hrender.text = text;
+    timeoutId = setTimeout(() => hrender.visible = true, DELAY);
+  }
+  function hide() {
+    clearTimeout(timeoutId);
+    timeoutId = 0;
+    hrender.visible = false;
+    tempListener.forEach(x => x());
+  }
+  function cleanup(unlisten: Unlisten): () => void {
+    return () => {
+      unlisten();
+      hide();
+      hrender.lock = false
+    };
   }
 
   /*** import ***/
-  import { untrack, onDestroy } from "svelte";
-  import { type Action, type ActionReturn } from "svelte/action";
+  import { untrack } from "svelte";
   import { on } from "svelte/events";
+  import { type Action, type ActionReturn } from "svelte/action";
   import { STATE, PART } from "$lib/const";
   import { getApplyStyle, throttle } from "$lib/util";
   import { stdTooltip } from "$lib/style";
@@ -71,45 +79,44 @@
 <script lang="ts">
   /*** Initialize ***/
   let elem: HTMLDivElement | undefined = $state();
-  let render = $state(false);
+  let appear = $state(false);
 
   /*** Sync with outside ***/
-  $effect.pre(() => { visible;
+  $effect.pre(() => { hrender.visible;
     untrack(() => adjustPosition());
   });
-  $effect.pre(() => { lock;
-    untrack(() => shouldRendered());
+  $effect.pre(() => { hrender.lock;
+    untrack(() => shouldAppear());
   });
 
   /*** Styling ***/
   const myStyle = getApplyStyle(stdTooltip, PART_TOOLTIP as SubTuple<PartTuple>, STATE.DEFAULT);
-  let visibility = $derived(visible ? "visibility: visible;" : "visibility: hidden; z-index: -9999;");
+  let visibility = $derived(hrender.visible ? "visibility: visible;" : "visibility: hidden; z-index: -9999;");
 
   /*** Status ***/
 
   /*** Validation ***/
 
   /*** Others ***/
-  function shouldRendered() {
-    if (lock) { return; }
-    render = true;
-    lock = true;
+  function shouldAppear() {
+    if (hrender.lock) { return; }
+    appear = true;
+    hrender.lock = true;
   }
   function adjustPosition() {
-    if (!visible) { return; }
+    if (!hrender.visible) { return; }
     const size = { width: elem?.offsetWidth ?? 0, height: elem?.offsetHeight ?? 0 };
-    position.x = window.innerWidth-pointer.x < size.width ? pointer.x-size.width : pointer.x + (OFFSET * 2);
-    position.y = window.innerHeight-pointer.y < size.height ? pointer.y-size.height : pointer.y + OFFSET;
+    position.elem.x = window.innerWidth-position.cursor.x < size.width ? position.cursor.x-size.width : position.cursor.x + (OFFSET * 2);
+    position.elem.y = window.innerHeight-position.cursor.y < size.height ? position.cursor.y-size.height : position.cursor.y + OFFSET;
   }
 
   /*** Handle events ***/
-  onDestroy(() => lock = false);
 </script>
 
 <!---------------------------------------->
 
-{#if render}
-  <div bind:this={elem} class={myStyle[PART.WHOLE]} style={`position: fixed; left: ${position.x}px; top: ${position.y}px; ${visibility}`} aria-hidden="true">
-    {tooltipText}
+{#if appear}
+  <div bind:this={elem} class={myStyle[PART.WHOLE]} style={`position: fixed; left: ${position.elem.x}px; top: ${position.elem.y}px; ${visibility}`} aria-hidden="true">
+    {hrender.text}
   </div>
 {/if}
