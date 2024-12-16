@@ -38,6 +38,13 @@
     if (!isRgbColor(ary as RgbColor)) { return [0,0,0]; }
     return ary as RgbColor;
   }
+  export function getAlpha(str: string): number {
+    const ary = str.split("/");
+    if (ary.length !== 2) { return 1; }
+    const alpha = Number.parseFloat(ary[1].trim());
+    if (Number.isNaN(alpha)) { return 1; }
+    return correctAlpha(alpha);
+  }
 
   /*** Others ***/
   function isRgbColor(rgb: RgbColor): boolean {
