@@ -33,7 +33,7 @@
     return "#" + (1 << 24 | rgb[0] << 16 | rgb[1] << 8 | rgb[2]).toString(16).slice(1);
   }
   export function castStringToRgbColor(str: string): RgbColor {
-    const ary = str.split(" ").map(x => Number.parseInt(x));
+    const ary = str.split("/")[0].trim().split(" ").map(x => Number.parseInt(x));
     if (ary.length !== 3) { return [0,0,0]; }
     if (!isRgbColor(ary as RgbColor)) { return [0,0,0]; }
     return ary as RgbColor;
@@ -45,6 +45,9 @@
       if (!(rgb[i] >= 0 && rgb[i] < 256)) { return false; }
     }
     return true;
+  }
+  function correctAlpha(alpha: number): number {
+    return alpha < 0 ? 0 : alpha > 1 ? 1 : alpha;
   }
 
   /*** import ***/
@@ -66,13 +69,14 @@
   const attr = omit({...attributes}, ["type", "disabled"]);
   let disabled = $derived(status === STATE.DISABLE);
   let rgb = $derived(castStringToRgbColor(value));
+  let alp = $derived(correctAlpha(alpha));
   let hex = $state(getHex(rgb));
 
   /*** Sync with outside ***/
-  $effect.pre(() => { hex;
-    untrack(() => value = getRgb(hex).join(" "));
+  $effect.pre(() => { hex; alp;
+    untrack(() => setValue());
   });
-  $effect(() => { value;
+  $effect(() => { rgb;
     untrack(() => hex = getHex(rgb));
   });
 
@@ -85,6 +89,14 @@
   /*** Validation ***/
 
   /*** Others ***/
+  function setValue() {
+    const rgb = getRgb(hex);
+    if (alp === 1) {
+      value = `${rgb[0]} ${rgb[1]} ${rgb[2]}`;
+    } else {
+      value = `${rgb[0]} ${rgb[1]} ${rgb[2]} / ${alp}`;
+    }
+  }
 
   /*** Handle events ***/
 </script>
@@ -94,7 +106,7 @@
 <label class={myStyle[PART.WHOLE]}>
   <!-- inline-block bg-[linear-gradient(45deg,#ccc_25%,transparent_25%),linear-gradient(-45deg,#ccc_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#ccc_75%),linear-gradient(-45deg,transparent_75%,#ccc_75%)] bg-[length:20px_20px] bg-[position:0_0,0_10px,10px_-10px,-10px_0px] -->
   <div style="display: inline-block; background-image: linear-gradient(45deg,#ccc 25%,transparent 25%),linear-gradient(-45deg,#ccc 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#ccc 75%),linear-gradient(-45deg,transparent 75%,#ccc 75%); background-size: 20px 20px; background-position: 0 0,0 10px,10px -10px,-10px 0px;">
-    <div class={myStyle[PART.MAIN]} style={`background-color: rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`}>
+    <div class={myStyle[PART.MAIN]} style={`background-color: rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alp})`}>
       {#if typeof action === "function"}
         <input bind:value={hex} bind:this={element} type="color" style="visibility: hidden;" {disabled} {...attr} {...events} use:action />
       {:else}

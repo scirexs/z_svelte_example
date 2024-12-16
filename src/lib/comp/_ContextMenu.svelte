@@ -3,9 +3,8 @@
   export type Props = {
     children: Snippet,
     status?: State,  // bindable, [STATE.DEFAULT]
-    open?: boolean,  // bindable, [false]
-    position?: { x: number, y: number },   // bindable, [{x:0, y:0}]
-    auto?: boolean,  // [true]
+    open?: boolean,  // bindable, [false]  (to observe state, not to control)
+    lock?: boolean,  // bindable, [false]
     style?: DefineStateStyle | DefineStyle | StyleSet,
     element?: HTMLElement,  // bindable
   };
@@ -15,10 +14,9 @@
   ] as const;
 
   /*** Others ***/
-  let lock = $state(false);
 
   /*** import ***/
-  import { type Snippet, untrack, onDestroy } from "svelte";
+  import { type Snippet } from "svelte";
   import { STATE, PART } from "$lib/const";
   import { getApplyStyle } from "$lib/util";
   import { stdContextMenu } from "$lib/style";
@@ -27,15 +25,12 @@
 <!---------------------------------------->
 
 <script lang="ts">
-  let { children, status = $bindable(STATE.DEFAULT), open = $bindable(false), position = $bindable({x:0,y:0}), auto = true, style, element = $bindable() }: Props = $props();
+  let { children, status = $bindable(STATE.DEFAULT), open = $bindable(false), lock = $bindable(false), style, element = $bindable() }: Props = $props();
 
   /*** Initialize ***/
-  let render = $state(false);
+  let position = $state({ x: 0, y: 0 });
 
   /*** Sync with outside ***/
-  $effect.pre(() => { lock;
-    untrack(() => shouldRendered());
-  });
 
   /*** Styling ***/
   const myStyleSet = style === undefined ? stdContextMenu : stdContextMenu.toMerge(style);
@@ -47,14 +42,10 @@
   /*** Validation ***/
 
   /*** Others ***/
-  function shouldRendered() {
-    if (lock) { return; }
-    render = true;
-    lock = true;
-  }
 
   /*** Handle events ***/
   function show(ev: MouseEvent) {
+    if (lock) { return; }
     ev.preventDefault();
 
     const menu = { width: element?.offsetWidth ?? 0, height: element?.offsetHeight ?? 0 };
@@ -63,14 +54,11 @@
     open = true
   }
   function hide() { open = false; }
-  onDestroy(() => lock = false);
 </script>
 
 <!---------------------------------------->
-<svelte:document oncontextmenu={auto ? show : undefined} onclick={hide} />
+<svelte:document oncontextmenu={show} onclick={hide} />
 
-{#if render}
-  <nav class={myStyle[PART.WHOLE]} style={`position: fixed; left:${position.x}px; top:${position.y}px; ${visibility}`} bind:this={element}>
-    {@render children()}
-  </nav>
-{/if}
+<nav class={myStyle[PART.WHOLE]} style={`position: fixed; left:${position.x}px; top:${position.y}px; ${visibility}`} bind:this={element}>
+  {@render children()}
+</nav>
