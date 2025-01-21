@@ -7,7 +7,7 @@ export {
   stdButton,
   stdToggle,
   stdSwitch,
-  stdThemeSwitch,
+  stdDarkToggle,
   stdSlider,
   stdColorPicker,
   stdChip,
@@ -334,36 +334,6 @@ const stdSwitch = new StyleSet({
     },
   },
 });
-const stdThemeSwitch = new StyleSet({
-  [STATE.DEFAULT]: {
-    whole: {
-      margin: "m-5",
-    },
-    main: {
-      width: "w-12",
-      height: "h-6",
-      border_radius: "rounded-2xl",
-      background_color: "bg-inactive",
-    },
-    aux: {
-      width: "w-2/5",
-      height: "h-4/5",
-      position: "top-[9%] left-[9%]",
-      border_radius: "rounded-full",
-      background_color: "bg-white",
-      transition_property: "transition",
-      transition_duration: "duration-300",
-    },
-  },
-  [STATE.ACTIVE]: {
-    main: {
-      background_color: "bg-active",
-    },
-    aux: {
-      transform: "translate-x-[110%]"
-    },
-  },
-});
 const stdSlider = new StyleSet({
   [STATE.DEFAULT]: {
     whole: {
@@ -393,6 +363,36 @@ const stdColorPicker = new StyleSet({
       height: "h-10",
     }
   }
+});
+const stdDarkToggle = new StyleSet({
+  [STATE.DEFAULT]: {
+    whole: {
+      margin: "m-5",
+    },
+    main: {
+      width: "w-12",
+      height: "h-6",
+      border_radius: "rounded-2xl",
+      background_color: "bg-inactive",
+    },
+    aux: {
+      width: "w-2/5",
+      height: "h-4/5",
+      position: "top-[9%] left-[9%]",
+      border_radius: "rounded-full",
+      background_color: "bg-white",
+      transition_property: "transition",
+      transition_duration: "duration-300",
+    },
+  },
+  [STATE.ACTIVE]: {
+    main: {
+      background_color: "bg-active",
+    },
+    aux: {
+      transform: "translate-x-[110%]"
+    },
+  },
 });
 const stdChip = new StyleSet({
   [STATE.DEFAULT]: {
