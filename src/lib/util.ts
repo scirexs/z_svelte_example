@@ -26,6 +26,7 @@ export {
   getRandomInt,
   trigger,
   throttle,
+  debounce,
   // Async utility
   sleep,
   // Global state
@@ -375,7 +376,7 @@ function getRandomInt(max: number): number {
 function trigger(target: boolean): boolean {
   return !target;
 }
-function throttle<T extends (...args: any[]) => any>(interval: number, fn: T): (...args: Parameters<T>) => void {
+function throttle<T extends (...args: any[]) => void>(interval: number, fn: T): (...args: Parameters<T>) => void {
   let timer: number | undefined;
   let last: number = 0;
   const elapsed = () => Date.now() - last;
@@ -389,6 +390,15 @@ function throttle<T extends (...args: any[]) => any>(interval: number, fn: T): (
     timer = setTimeout(() => {
       if (elapsed() >= interval) { run(args); }
     }, interval - elapsed());
+  };
+}
+function debounce<T extends (...args: any[]) => void>(delay: number, fn: T): (...args: Parameters<T>) => void {
+  let timer: number | undefined;
+  return (...args: Parameters<T>) => {
+    if (timer) { clearTimeout(timer); }
+    timer = setTimeout(() => {
+      fn.call(null, ...args);
+    }, delay);
   };
 }
 
